@@ -67,7 +67,6 @@
           prepend-icon="mdi-note-text"
           label="備考"
           required
-          @keyup.enter="login()"
           rows="1"
         ></v-textarea>
 
@@ -98,7 +97,6 @@ export default Vue.extend({
       notes: "",
       tagChoices: [] as string[],
       locationChoices: [] as Location[],
-      db: firebase.firestore(),
       configDoc: firebase.firestore().collection("config").doc("config"),
       equiposCol: firebase.firestore().collection("equipos"),
       idError: "",

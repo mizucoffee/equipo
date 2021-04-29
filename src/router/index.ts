@@ -5,6 +5,7 @@ import MainMenu from "../views/MainMenu.vue";
 import Manage from "../views/Manage.vue";
 import NewEquipo from "../views/NewEquipo.vue";
 import Login from "../views/Login.vue";
+import Return from "../views/Return.vue";
 import firebase from "firebase/app";
 import { State } from "@/models";
 
@@ -37,6 +38,11 @@ export default function (
       path: "/manage/new",
       name: "NewEquipo",
       component: NewEquipo,
+    },
+    {
+      path: "/return",
+      name: "Return",
+      component: Return,
     },
   ];
 
