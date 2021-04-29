@@ -2,9 +2,11 @@ import Vue from "vue";
 import { Store } from "vuex";
 import VueRouter, { RouteConfig } from "vue-router";
 import MainMenu from "../views/MainMenu.vue";
+import Manage from "../views/Manage.vue";
+import NewEquipo from "../views/NewEquipo.vue";
 import Login from "../views/Login.vue";
 import firebase from "firebase/app";
-import { State } from "@/models/state";
+import { State } from "@/models";
 
 export default function (
   app: firebase.app.App,
@@ -25,6 +27,16 @@ export default function (
       name: "Login",
       component: Login,
       meta: { isPublic: true },
+    },
+    {
+      path: "/manage",
+      name: "Manage",
+      component: Manage,
+    },
+    {
+      path: "/manage/new",
+      name: "NewEquipo",
+      component: NewEquipo,
     },
   ];
 

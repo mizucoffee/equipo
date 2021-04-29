@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Vuex, { ActionTree, GetterTree, Store } from "vuex";
 import firebase from "firebase/app";
-import { State } from "@/models/state";
+import { State } from "@/models";
 
 export default function (app: firebase.app.App): Store<State> {
   Vue.use(Vuex);
@@ -16,7 +16,7 @@ export default function (app: firebase.app.App): Store<State> {
     onAuthStateChanged(state: State, user?: firebase.User) {
       state.user = user || null;
     },
-    signOut(state: State) {
+    logout(state: State) {
       state.user = null;
     },
   };
@@ -26,9 +26,9 @@ export default function (app: firebase.app.App): Store<State> {
   };
 
   const actions: ActionTree<State, State> = {
-    async signout() {
+    async logout() {
       await auth.signOut();
-      this.commit("signOut");
+      this.commit("logout");
     },
   };
 
