@@ -14,7 +14,6 @@ import Vue from "vue";
 export default Vue.extend({
   name: "MainMenu",
 
-  components: {
-  },
+  components: {},
 });
 </script>

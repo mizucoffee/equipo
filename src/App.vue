@@ -1,6 +1,7 @@
 <template>
   <v-app>
     <v-app-bar app color="primary" dark>
+      <v-spacer></v-spacer>
       <div class="d-flex align-center">
         <v-img
           alt="Equipo Logo"
@@ -14,7 +15,7 @@
           :src="require('./assets/equipo_white.svg')"
           contain
           width="100"
-          style="overflow: visible;"
+          style="overflow: visible"
           transition="slide-x-transition"
         />
       </div>
@@ -31,9 +32,6 @@ import Vue from "vue";
 
 export default Vue.extend({
   name: "App",
-
-  data: () => ({
-    //
-  }),
+  data: () => ({}),
 });
 </script>
