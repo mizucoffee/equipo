@@ -62,8 +62,9 @@ export default Vue.extend({
     };
   },
   async mounted() {
-    const equiposSnapshot = await this.equiposCol.get();
-    this.equipos = equiposSnapshot.docs.map((doc) => doc.data() as Equipo);
+    this.equiposCol.onSnapshot((snapshot) => {
+      this.equipos = snapshot.docs.map((doc) => doc.data() as Equipo);
+    });
   },
   components: {},
 });
