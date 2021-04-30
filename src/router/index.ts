@@ -1,12 +1,12 @@
 import Vue from "vue";
 import { Store } from "vuex";
 import VueRouter, { RouteConfig } from "vue-router";
-import MainMenu from "../views/MainMenu.vue";
-import Manage from "../views/Manage.vue";
-import NewEquipo from "../views/NewEquipo.vue";
-import Login from "../views/Login.vue";
-import Return from "../views/Return.vue";
-import TakingOut from "../views/TakingOut.vue";
+import MainMenu from "@/views/MainMenu.vue";
+import Manage from "@/views/Manage.vue";
+import Login from "@/views/Login.vue";
+import Return from "@/views/Return.vue";
+import TakingOut from "@/views/TakingOut.vue";
+import Search from "@/views/Search.vue";
 import firebase from "firebase/app";
 import { State } from "@/models";
 
@@ -36,11 +36,6 @@ export default function (
       component: Manage,
     },
     {
-      path: "/manage/new",
-      name: "NewEquipo",
-      component: NewEquipo,
-    },
-    {
       path: "/return",
       name: "Return",
       component: Return,
@@ -49,6 +44,11 @@ export default function (
       path: "/takingout",
       name: "TakingOut",
       component: TakingOut,
+    },
+    {
+      path: "/search",
+      name: "Search",
+      component: Search,
     },
   ];
 

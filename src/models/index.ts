@@ -16,7 +16,7 @@ export class Equipo {
   manufacture = "";
   location: firebase.firestore.DocumentReference | null = null; // ref
   notes = "";
-  isTakingOut = false;
+  isTakingOut = true;
   isRemoved = false;
 
   constructor(init?: Partial<Equipo>) {

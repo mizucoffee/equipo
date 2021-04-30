@@ -16,7 +16,10 @@
           id="idTextField"
         ></v-text-field>
         <v-card-actions>
-          <v-btn class="mr-4" @click="returnEquipo">Submit</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn class="mr-4" @click="returnEquipo" color="accent"
+            >Submit</v-btn
+          >
         </v-card-actions>
       </v-form>
     </v-card-text>

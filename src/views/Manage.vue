@@ -1,11 +1,10 @@
 <template>
   <div class="text-center">
-    <v-btn x-large color="accent" class="ma-2" dark to="/manage/new"
-      >新規追加</v-btn
-    >
     <v-card width="1200px" class="mx-auto mt-5">
       <v-card-title>
         Manage Equipos
+
+        <v-divider class="mx-4" vertical></v-divider>
         <v-spacer></v-spacer>
         <v-text-field
           v-model="search"
@@ -15,6 +14,25 @@
           clearable
           hide-details
         ></v-text-field>
+        <v-dialog v-model="newDialog" max-width="600px">
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              x-large
+              color="accent"
+              class="ml-4"
+              dark
+              v-bind="attrs"
+              v-on="on"
+              >新規追加</v-btn
+            >
+          </template>
+          <EquipoForm
+            type="new"
+            :initialEquipo="selectedEquipo"
+            @submit="submitForm"
+            @close="close"
+          ></EquipoForm>
+        </v-dialog>
       </v-card-title>
       <v-data-table
         :headers="headers"
@@ -23,6 +41,8 @@
         :search="search"
         multi-sort
         :items-per-page="100"
+        @click:row="onClickRow"
+        class="row-pointer"
       >
         <template v-slot:item.isTakingOut="{ item }">
           <v-simple-checkbox
@@ -31,6 +51,15 @@
           ></v-simple-checkbox>
         </template>
       </v-data-table>
+
+      <v-dialog v-model="editDialog" max-width="600px">
+        <EquipoForm
+          type="edit"
+          :initialEquipo="selectedEquipo"
+          @submit="submitForm"
+          @close="close"
+        ></EquipoForm>
+      </v-dialog>
     </v-card>
   </div>
 </template>
@@ -40,6 +69,7 @@ import Vue from "vue";
 import firebase from "firebase/app";
 import "firebase/firestore";
 import { Equipo } from "@/models";
+import EquipoForm from "@/components/EquipoForm.vue";
 
 export default Vue.extend({
   name: "Manage",
@@ -72,7 +102,7 @@ export default Vue.extend({
         },
         {
           text: "持ち出し中",
-          align: "start",
+          align: "center",
           sortable: true,
           value: "isTakingOut",
         },
@@ -80,6 +110,9 @@ export default Vue.extend({
       equipos: [] as Equipo[],
       equiposCol: firebase.firestore().collection("equipos"),
       search: "",
+      newDialog: false,
+      editDialog: false,
+      selectedEquipo: new Equipo(),
     };
   },
   async mounted() {
@@ -87,6 +120,28 @@ export default Vue.extend({
       this.equipos = snapshot.docs.map((doc) => doc.data() as Equipo);
     });
   },
-  components: {},
+  components: { EquipoForm },
+  methods: {
+    onClickRow(item: Equipo) {
+      this.selectedEquipo = item;
+      this.editDialog = true;
+    },
+    submitForm(e: Equipo) {
+      const equipo = new Equipo(e);
+      this.equiposCol.doc(equipo.id).set(equipo.toObject());
+      this.close();
+    },
+    close() {
+      this.selectedEquipo = new Equipo();
+      this.editDialog = false;
+      this.newDialog = false;
+    },
+  },
 });
 </script>
+
+<style lang="stylus" scoped>
+.row-pointer >>> tbody tr {
+  cursor: pointer;
+}
+</style>

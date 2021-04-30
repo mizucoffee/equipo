@@ -1,21 +1,22 @@
 <template>
   <v-card width="600px" class="mx-auto mt-5">
     <v-card-title>
-      <h2 class="text-center">New Equipo</h2>
+      <h2 class="text-center">{{ title }}</h2>
     </v-card-title>
     <v-card-text>
       <v-form>
         <v-text-field
-          v-model="id"
+          v-model="equipo.id"
           prepend-icon="mdi-qrcode"
           label="備品コード"
           required
           maxlength="6"
           :rules="[rules.required]"
           :error-messages="idError"
+          :disabled="this.type != 'new'"
         ></v-text-field>
         <v-combobox
-          v-model="tags"
+          v-model="equipo.tags"
           :items="tagChoices"
           prepend-icon="mdi-tag"
           label="タグ"
@@ -36,25 +37,25 @@
           </template>
         </v-combobox>
         <v-text-field
-          v-model="model"
+          v-model="equipo.model"
           prepend-icon="mdi-numeric"
           label="型番"
           required
         ></v-text-field>
         <v-text-field
-          v-model="name"
+          v-model="equipo.name"
           prepend-icon="mdi-form-textbox"
           label="品名"
           required
         ></v-text-field>
         <v-text-field
-          v-model="manufacture"
+          v-model="equipo.manufacture"
           prepend-icon="mdi-domain"
           label="メーカー"
           required
         ></v-text-field>
         <v-autocomplete
-          v-model="location"
+          v-model="equipo.location"
           prepend-icon="mdi-map-marker"
           label="保管場所"
           required
@@ -63,7 +64,7 @@
           item-value="ref"
         ></v-autocomplete>
         <v-textarea
-          v-model="notes"
+          v-model="equipo.notes"
           prepend-icon="mdi-note-text"
           label="備考"
           required
@@ -71,7 +72,14 @@
         ></v-textarea>
 
         <v-card-actions>
-          <v-btn class="mr-4" @click="submit">Submit</v-btn>
+          <v-btn @click="close">Close</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn
+            @click="submit"
+            :disabled="this.idError != '' || this.equipo.id == ''"
+            color="accent"
+            >Submit</v-btn
+          >
         </v-card-actions>
       </v-form>
     </v-card-text>
@@ -86,15 +94,11 @@ import { Config, Equipo, Location } from "@/models";
 
 export default Vue.extend({
   name: "Manage",
+  props: ["type", "initialEquipo"],
   data: function () {
     return {
-      id: "",
-      tags: [] as string[],
-      model: "",
-      name: "",
-      manufacture: "",
-      location: null as firebase.firestore.DocumentReference | null,
-      notes: "",
+      equipo: this.initialEquipo || new Equipo(),
+
       tagChoices: [] as string[],
       locationChoices: [] as Location[],
       configDoc: firebase.firestore().collection("config").doc("config"),
@@ -105,12 +109,15 @@ export default Vue.extend({
       },
     };
   },
+  computed: {
+    title: function () {
+      return this.type == "new" ? "New Equipo" : "Edit Equipo";
+    },
+  },
   async mounted() {
-    const config = (await this.configDoc.get()).data() as Config;
-    this.tagChoices = config.tags;
+    this.tagChoices = ((await this.configDoc.get()).data() as Config).tags;
 
-    const equiposSnapshot = await this.equiposCol.get();
-    this.locationChoices = equiposSnapshot.docs.map((doc) => {
+    this.locationChoices = (await this.equiposCol.get()).docs.map((doc) => {
       const equipo = doc.data() as Equipo;
       return {
         ref: doc.ref,
@@ -121,45 +128,39 @@ export default Vue.extend({
   methods: {
     async submit() {
       const config = (await this.configDoc.get()).data() as Config;
-      const tags = [...config.tags, ...this.tags];
+      const tags = [...config.tags, ...this.equipo.tags];
       this.configDoc.set({ tags: [...new Set(tags)] });
 
       // validate
 
-      const e = new Equipo({
-        id: this.id,
-        tags: this.tags,
-        model: this.model,
-        name: this.name,
-        manufacture: this.manufacture,
-        location: this.location,
-        notes: this.notes,
-        isTakingOut: true,
-        isRemoved: false,
-      });
-
-      this.equiposCol.doc(this.id).set(e.toObject());
-      this.$router.push("/manage");
+      this.$emit("submit", this.equipo);
+      if (this.type == "new") this.equipo = new Equipo();
     },
     removeTag(tag: string) {
-      this.tags.splice(this.tags.indexOf(tag), 1);
+      this.equipo.tags.splice(this.equipo.tags.indexOf(tag), 1);
+    },
+    close(e: Event) {
+      this.$emit("close", e);
     },
   },
   components: {},
   watch: {
-    async id(id) {
-      this.id = id.toUpperCase();
+    async "equipo.id"(id) {
+      this.equipo.id = id.toUpperCase();
 
       if (!id.match(/^[A-Z]-\d{4}$/)) {
         this.idError = "IDが正しい形式ではありません";
         return;
       }
-      if ((await this.equiposCol.doc(id).get()).exists) {
+      if ((await this.equiposCol.doc(id).get()).exists && this.type == "new") {
         this.idError = "このIDは既に登録されています";
         return;
       }
 
       this.idError = "";
+    },
+    initialEquipo(newEquipo) {
+      if (newEquipo.id) this.equipo = newEquipo;
     },
   },
 });
