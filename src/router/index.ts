@@ -6,6 +6,7 @@ import Manage from "../views/Manage.vue";
 import NewEquipo from "../views/NewEquipo.vue";
 import Login from "../views/Login.vue";
 import Return from "../views/Return.vue";
+import TakingOut from "../views/TakingOut.vue";
 import firebase from "firebase/app";
 import { State } from "@/models";
 
@@ -43,6 +44,11 @@ export default function (
       path: "/return",
       name: "Return",
       component: Return,
+    },
+    {
+      path: "/takingout",
+      name: "TakingOut",
+      component: TakingOut,
     },
   ];
 

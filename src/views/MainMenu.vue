@@ -1,7 +1,9 @@
 <template>
   <div class="text-center">
     <div class="my-2">
-      <v-btn x-large color="accent" class="ma-2" dark>持ち出し処理</v-btn>
+      <v-btn x-large color="accent" class="ma-2" dark to="takingout"
+        >持ち出し処理</v-btn
+      >
       <v-btn x-large color="accent" class="ma-2" dark to="return"
         >返却処理</v-btn
       >

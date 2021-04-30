@@ -4,12 +4,32 @@
       >新規追加</v-btn
     >
     <v-card width="1200px" class="mx-auto mt-5">
+      <v-card-title>
+        Manage Equipos
+        <v-spacer></v-spacer>
+        <v-text-field
+          v-model="search"
+          append-icon="mdi-magnify"
+          label="Search"
+          single-line
+          clearable
+          hide-details
+        ></v-text-field>
+      </v-card-title>
       <v-data-table
         :headers="headers"
         :items="equipos"
         item-key="id"
+        :search="search"
+        multi-sort
         :items-per-page="100"
       >
+        <template v-slot:item.isTakingOut="{ item }">
+          <v-simple-checkbox
+            v-model="item.isTakingOut"
+            disabled
+          ></v-simple-checkbox>
+        </template>
       </v-data-table>
     </v-card>
   </div>
@@ -59,6 +79,7 @@ export default Vue.extend({
       ],
       equipos: [] as Equipo[],
       equiposCol: firebase.firestore().collection("equipos"),
+      search: "",
     };
   },
   async mounted() {

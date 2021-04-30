@@ -1,26 +1,28 @@
 <template>
-  <v-card width="600px" class="mx-auto mt-5">
-    <v-card-title>
-      <h2 class="text-center">返却</h2>
-    </v-card-title>
-    <v-card-text>
-      <v-alert :type="type" v-show="message">{{ message }}</v-alert>
-      <v-form @submit.prevent>
-        <v-text-field
-          v-model="id"
-          prepend-icon="mdi-qrcode"
-          label="備品コード"
-          required
-          maxlength="6"
-          @keyup.enter="returnEquipo()"
-          id="idTextField"
-        ></v-text-field>
-        <v-card-actions>
-          <v-btn class="mr-4" @click="returnEquipo">Submit</v-btn>
-        </v-card-actions>
-      </v-form>
-    </v-card-text>
-  </v-card>
+  <div>
+    <v-card width="600px" class="mx-auto mt-5">
+      <v-card-title>
+        <h2 class="text-center">貸出</h2>
+      </v-card-title>
+      <v-card-text>
+        <v-alert :type="type" v-show="message">{{ message }}</v-alert>
+        <v-form @submit.prevent>
+          <v-text-field
+            v-model="id"
+            prepend-icon="mdi-qrcode"
+            label="備品コード"
+            required
+            maxlength="6"
+            @keyup.enter="takingOutEquipo()"
+            id="idTextField"
+          ></v-text-field>
+          <v-card-actions>
+            <v-btn class="mr-4" @click="takingOutEquipo">Submit</v-btn>
+          </v-card-actions>
+        </v-form>
+      </v-card-text>
+    </v-card>
+  </div>
 </template>
 
 <script lang="ts">
@@ -30,7 +32,7 @@ import "firebase/firestore";
 import { Equipo } from "@/models";
 
 export default Vue.extend({
-  name: "Return",
+  name: "TakingOut",
   data() {
     return {
       id: "",
@@ -49,7 +51,7 @@ export default Vue.extend({
     },
   },
   methods: {
-    async returnEquipo() {
+    async takingOutEquipo() {
       if (!this.id.match(/^[A-Z]-\d{4}$/)) {
         this.type = "error";
         this.message = `「${this.id}」は正しい備品コードではありません`;
@@ -58,7 +60,7 @@ export default Vue.extend({
       }
 
       this.type = "info";
-      this.message = "返却処理中...";
+      this.message = "貸出処理中...";
       const equipoSnapshot = await this.equiposCol.doc(this.id).get();
       if (!equipoSnapshot.exists) {
         this.type = "error";
@@ -69,14 +71,14 @@ export default Vue.extend({
 
       const equipo = new Equipo(equipoSnapshot.data());
 
-      if (equipo.isTakingOut) {
-        equipo.isTakingOut = false;
+      if (!equipo.isTakingOut) {
+        equipo.isTakingOut = true;
         this.equiposCol.doc(this.id).set(equipo.toObject());
         this.type = "success";
-        this.message = `「${equipo.name}」を返却しました`;
+        this.message = `「${equipo.name}」を貸出しました`;
       } else {
         this.type = "warning";
-        this.message = `「${equipo.name}」は貸出されていません`;
+        this.message = `「${equipo.name}」は貸出されています`;
       }
       (document.querySelector("#idTextField") as HTMLInputElement).select();
     },
